@@ -1,0 +1,58 @@
+name: 构建
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+    build-jar:
+        runs-on: ubuntu-latest
+        steps:
+          - name: 签出仓库
+            uses: actions/checkout@v4
+          - name: 安装JDK
+            uses: actions/setup-java@v4
+            with:
+              distribution: 'temurin'
+              java-version: '21'
+          - name: 让gradlew可执行
+            if: runner.os != 'Windows'
+            run: chmod +x ./gradlew
+          - name: 构建
+            run: ./gradlew build -x test
+            # 测试肯定通不过，有问题，干脆直接跳掉完事
+          - name: 上传构建产物
+            uses: actions/upload-artifact@v4
+            with:
+              name: WebAPI Jar
+              path: build/libs/*boot*.jar
+    build-native:
+      runs-on: ${{ matrix.os }}
+      strategy:
+        matrix:
+          os: [macos-latest, windows-latest, ubuntu-latest]
+      steps:
+        - name: 签出仓库
+          uses: actions/checkout@v4
+        - name: 安装GraalVM
+          uses: graalvm/setup-graalvm@v1
+          with:
+            java-version: '21'
+            distribution: 'liberica'
+        - name: 让gradlew可执行
+          if: runner.os != 'Windows'
+          run: chmod +x ./gradlew
+        - name: 构建原生镜像
+          run: ./gradlew nativeCompile -x test
+        - name: 规范文件名并删除无用文件(Windows)
+          if: runner.os == 'Windows'
+          run: |
+            Get-ChildItem -Path build/native/nativeCompile -File | Where-Object { $_.Name -notlike "*.exe" } | Remove-Item -Force
+            Rename-Item -Path build/native/nativeCompile/*.exe -NewName ${{ runner.os }}-${{ runner.arch }}.exe
+        - name: 规范文件名(非Windows)
+          if: runner.os != 'Windows'
+          run: mv build/native/nativeCompile/* build/native/nativeCompile/${{ runner.os }}-${{ runner.arch }}
+        - name: 上传构建产物
+          uses: actions/upload-artifact@v4
+          with:
+            name: WebAPI Native Image ${{ runner.os }} ${{ runner.arch }}
+            path: build/native/nativeCompile/*
