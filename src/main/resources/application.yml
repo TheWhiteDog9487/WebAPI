@@ -1,5 +1,8 @@
 spring:
   application:
     name: WebAPI
+  threads:
+    virtual:
+      enabled: true
 server:
   port: 36987
