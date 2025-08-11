@@ -2,9 +2,7 @@ package xyz.thewhitedog9487.WebAPI.Controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +18,7 @@ import java.util.Map;
 class IP {
     @GetMapping("/ip")
     ResponseEntity<String> GetIP(@RequestHeader Map<String, String> HttpHeader, HttpServletRequest Request) {
-        if (HttpHeader.get("CF-Connecting-IP") instanceof String IP) {
+        if (HttpHeader.get("CF-Connecting-IP".toLowerCase()) instanceof String IP) {
             /*
             ↑ instanceof的模式变量一定非空
             相当于是：
