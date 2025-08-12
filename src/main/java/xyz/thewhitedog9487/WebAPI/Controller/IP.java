@@ -29,13 +29,16 @@ class IP {
             log.info("请求携带了CF-Connecting-IP头部，IP为：{}", IP);
             return new ResponseEntity<>(IP,
                     MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
-                    HttpStatus.OK);
-        }
+                    HttpStatus.OK); }
         else {
-            log.info("请求未携带CF-Connecting-IP头部，HttpServletRequest获取到的IP为：{}", Request.getRemoteAddr());
+            if (HttpHeader.get("X-Forwarded-For".toLowerCase()) instanceof String IP) {
+                log.info("请求携带了X-Forwarded-For头部，IP为：{}", IP);
+                return new ResponseEntity<>(IP,
+                        MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
+                        HttpStatus.OK); }
+            log.info("请求未携带CF-Connecting-IP和X-Forwarded-For头部，HttpServletRequest获取到的IP为：{}", Request.getRemoteAddr());
             return new ResponseEntity<>(Request.getRemoteAddr(),
                     MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
-                    HttpStatus.OK);
-        }
+                    HttpStatus.OK); }
     }
 }
