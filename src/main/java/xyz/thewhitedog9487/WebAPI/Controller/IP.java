@@ -20,24 +20,21 @@ class IP {
     ResponseEntity<String> GetIP(@RequestHeader Map<String, String> HttpHeader, HttpServletRequest Request) {
         if (HttpHeader.get("CF-Connecting-IP".toLowerCase()) instanceof String IP) {
             /*
-            ↑ instanceof的模式变量一定非空
+            ↑ instanceof的如果成功完成模式匹配，那么模式变量一定非空
             相当于是：
             if (HttpHeader.get("CF-Connecting-IP" != null) {
                 String IP = HttpHeader.get("CF-Connecting-IP");
             }
             */
-            log.info("请求携带了CF-Connecting-IP头部，IP为：{}", IP);
             return new ResponseEntity<>(IP,
                     MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
                     HttpStatus.OK); }
-        else {
-            if (HttpHeader.get("X-Forwarded-For".toLowerCase()) instanceof String IP) {
+        else if (HttpHeader.get("X-Forwarded-For".toLowerCase()) instanceof String IP) {
                 IP = IP.split(",")[0].trim();
-                log.info("请求携带了X-Forwarded-For头部，IP为：{}", IP);
                 return new ResponseEntity<>(IP,
                         MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
                         HttpStatus.OK); }
-            log.info("请求未携带CF-Connecting-IP和X-Forwarded-For头部，HttpServletRequest获取到的IP为：{}", Request.getRemoteAddr());
+        else {
             return new ResponseEntity<>(Request.getRemoteAddr(),
                     MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
                     HttpStatus.OK); }

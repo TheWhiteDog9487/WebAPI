@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -61,10 +60,6 @@ class Message {
     @ExceptionHandler(MissingRequestHeaderException.class)
     ResponseEntity<ResponseData> HandleMissingHeader(MissingRequestHeaderException Exception, HttpServletRequest Request) {
         log.warn("请求缺少必要的头部信息：{}", Exception.getHeaderName());
-        if (Request.getHeader("CF-Connecting-IP") instanceof String IP) {
-            log.warn("请求携带了CF-Connecting-IP头部，IP：{}", IP);
-        } else {
-            log.warn("请求未携带CF-Connecting-IP头部，IP：{}", Request.getRemoteAddr()); }
         return new ResponseEntity<>(new ResponseData(
                 HttpStatus.BAD_REQUEST.value(),
                 "请求缺少必要的头部信息",
