@@ -32,6 +32,7 @@ class IP {
                     HttpStatus.OK); }
         else {
             if (HttpHeader.get("X-Forwarded-For".toLowerCase()) instanceof String IP) {
+                IP = IP.split(",")[0].trim();
                 log.info("请求携带了X-Forwarded-For头部，IP为：{}", IP);
                 return new ResponseEntity<>(IP,
                         MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
