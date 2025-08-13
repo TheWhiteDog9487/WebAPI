@@ -18,9 +18,15 @@ public class LogClientInfo extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("接收到对于{} {} 的请求", request.getMethod(), request.getRequestURL() + ( ( request.getQueryString() == null ) ? "" : "?" + request.getQueryString() ) );
         log.info("请求ID：{}", request.getRequestId());
-        if (request.getHeader("CF-Connecting-IP".toLowerCase()) instanceof String IP) {
+        if ( request.getHeader("CF-Connecting-IP".toLowerCase() ) instanceof String IP ) {
+            /*
+            ↑ 如果成功完成instanceof模式匹配，那么模式变量一定非空
+            相当于是：
+            if ( request.getHeader("CF-Connecting-IP".toLowerCase() ) != null ) {
+                String IP = request.getHeader( "CF-Connecting-IP".toLowerCase() ); }
+            */
             log.info("请求携带了CF-Connecting-IP头部，IP为：{}", IP); }
-        else if(request.getHeader("X-Forwarded-For".toLowerCase()) instanceof String IP) {
+        else if( request.getHeader("X-Forwarded-For".toLowerCase() ) instanceof String IP ) {
                 IP = IP.split(",")[0].trim();
                 log.info("请求携带了X-Forwarded-For头部，IP为：{}", IP); }
         else {

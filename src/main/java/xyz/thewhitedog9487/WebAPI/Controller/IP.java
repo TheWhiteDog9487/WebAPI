@@ -18,13 +18,12 @@ import java.util.Map;
 class IP {
     @GetMapping("/ip")
     ResponseEntity<String> GetIP(@RequestHeader Map<String, String> HttpHeader, HttpServletRequest Request) {
-        if (HttpHeader.get("CF-Connecting-IP".toLowerCase()) instanceof String IP) {
+        if ( HttpHeader.get("CF-Connecting-IP".toLowerCase() ) instanceof String IP) {
             /*
-            ↑ instanceof的如果成功完成模式匹配，那么模式变量一定非空
+            ↑ 如果成功完成instanceof模式匹配，那么模式变量一定非空
             相当于是：
-            if (HttpHeader.get("CF-Connecting-IP" != null) {
-                String IP = HttpHeader.get("CF-Connecting-IP");
-            }
+            if ( HttpHeader.get("CF-Connecting-IP".toLowerCase() ) != null ) {
+                String IP = HttpHeader.get( "CF-Connecting-IP".toLowerCase() ); }
             */
             return new ResponseEntity<>(IP,
                     MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
