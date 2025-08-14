@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Locale;
 
 @Slf4j
 @Component
@@ -25,10 +26,15 @@ public class LogClientInfo extends OncePerRequestFilter {
             if ( request.getHeader("CF-Connecting-IP".toLowerCase() ) != null ) {
                 String IP = request.getHeader( "CF-Connecting-IP".toLowerCase() ); }
             */
-            log.info("请求携带了CF-Connecting-IP头部，IP为：{}", IP); }
+            log.info("请求携带了CF-Connecting-IP头部，IP：{}", IP); }
         else if( request.getHeader("X-Forwarded-For".toLowerCase() ) instanceof String IP ) {
                 IP = IP.split(",")[0].trim();
-                log.info("请求携带了X-Forwarded-For头部，IP为：{}", IP); }
+                log.info("请求携带了X-Forwarded-For头部，IP：{}", IP); }
         else {
             log.info("请求未携带CF-Connecting-IP和X-Forwarded-For头部，HttpServletRequest获取到的IP为：{}", request.getRemoteAddr()); }
+        if ( request.getHeader("CF-IPCountry".toLowerCase() ) instanceof String IP ) {
+            var Country = Locale.of(Locale.PRC.getLanguage(), IP, Locale.SIMPLIFIED_CHINESE.getVariant());
+            log.info("请求携带了CF-IPCountry头部，ISO3166代码：{}，对应的国家/地区：{}", IP, Country.getDisplayCountry(Locale.SIMPLIFIED_CHINESE)); }
+        else {
+            log.info("请求未携带CF-IPCountry头部，无法获取国家/地区信息。"); }
         filterChain.doFilter(request, response); } }
