@@ -36,6 +36,17 @@ class IP {
         else {
             return new ResponseEntity<>(Request.getRemoteAddr(),
                     MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
+                    HttpStatus.OK); } }
+
+    @GetMapping("iso3166")
+    ResponseEntity<String> GetISO3166(@RequestHeader Map<String, String> HttpHeader) {
+        if (HttpHeader.get("CF-IPCountry".toLowerCase()) instanceof String CountryCode) {
+            return new ResponseEntity<>(CountryCode,
+                    MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
                     HttpStatus.OK); }
-    }
+        else {
+            log.warn("请求尝试获取其ip对应的iso3166代码，但是我们没有找到CF-IPCountry头部");
+            return new ResponseEntity<>("未找到CF-IPCountry头部",
+                    MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
+                    HttpStatus.NOT_FOUND); } }
 }
