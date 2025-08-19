@@ -6,3 +6,7 @@ spring:
       enabled: true
 server:
   port: 36987
+logging:
+  pattern:
+    level: "%5p %X{RequestID}"
+    # https://docs.spring.io/spring-boot/reference/features/logging.html#features.logging.custom-log-configuration

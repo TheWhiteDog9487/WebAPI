@@ -18,7 +18,6 @@ public class LogClientInfo extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("接收到对于{} {} 的请求", request.getMethod(), request.getRequestURL() + ( ( request.getQueryString() == null ) ? "" : "?" + request.getQueryString() ) );
-        log.info("请求ID：{}", request.getRequestId());
         if ( request.getHeader("CF-Connecting-IP".toLowerCase() ) instanceof String IP ) {
             /*
             ↑ 如果成功完成instanceof模式匹配，那么模式变量一定非空
