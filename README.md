@@ -1,6 +1,9 @@
 # 简介
 是[https://api.thewhitedog9487.xyz](https://api.thewhitedog9487.xyz)的源代码
 
+# 接口文档
+[这里](https://api.thewhitedog9487.xyz/swagger-ui/index.html)
+
 # 目前状态
 能用，但缺的东西非常多。  
 就像这个文档一样。  
@@ -11,7 +14,6 @@
 
 # 下一步
 - systemd服务自动安装和卸载
-- Swagger自动生成API接口文档
 
 # 许可授权
 WTFPL
