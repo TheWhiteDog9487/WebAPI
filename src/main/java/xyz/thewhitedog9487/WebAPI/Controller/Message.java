@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,14 +61,21 @@ class Message {
                     content = @Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
                         schema = @Schema(implementation = ResponseData.class),
-                        examples = @ExampleObject(value = "{\n" +
+                        examples = { @ExampleObject(value = "{\n" +
                                 "  \"code\": 400,\n" +
                                 "  \"message\": \"请求缺少必要的头部信息\",\n" +
                                 "  \"data\": {\n" +
                                 "    \"缺失的头部\": \"X-API-Key\"\n" +
                                 "  }\n" +
-                                "}") ),
-                    description = "缺少必须的请求头，请查看响应中的“缺失的头部”以诊断问题"),
+                                "}", name = "缺少头部信息") ,
+                                @ExampleObject(value = "{\n" +
+                                "  \"code\": 400,\n" +
+                                "  \"message\": \"请求体无法解析\",\n" +
+                                "  \"data\": {\n" +
+                                "    \"错误信息\": \"JSON parse error: Unexpected character ('}' (code 125)): was expecting double-quote to start field name\"\n" +
+                                "  }\n" +
+                                "}", name = "请求体无法解析") } ),
+                    description = "客户端发送的请求存在问题，请检查响应的data字段以获取更多信息"),
             @ApiResponse(responseCode = "401",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -84,7 +92,7 @@ class Message {
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ResponseData.class),
-                            examples = @ExampleObject(value = "{\n" +
+                            examples = { @ExampleObject(value = "{\n" +
                                     "  \"code\": 500,\n" +
                                     "  \"message\": \"消息发送失败\",\n" +
                                     "  \"data\": {\n" +
@@ -92,8 +100,19 @@ class Message {
                                     "    \"错误信息\": \"POST /channels/1398192763845214/messages returned 404 Not Found with response {code=10003, message=Unknown Channel}\",\n" +
                                     "    \"频道ID\": \"1398192763845214\"\n" +
                                     "  }\n" +
-                                    "}")),
-                    description = "消息发送失败，可能是由于Discord服务器问题或其他内部错误，请查看响应Body的“内容”子项以确定原因") } )
+                                    "}", name = "消息发送失败"),
+                                    @ExampleObject(value = "{\n" +
+                                    "  \"code\": 500,\n" +
+                                    "  \"message\": \"处理请求时发生未知错误\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"错误信息\": \"\"\n" +
+                                    "  }\n" +
+                                    "}", name = "未知错误") } ),
+                    description = """
+                            消息发送失败，可能是由于Discord服务器问题或其他内部错误，请查看响应Body以确定原因
+                            <br>
+                            另外，所有未被针对性处理的异常都会触发此响应
+                            """) } )
     @PostMapping("/discord")
     ResponseEntity<ResponseData> DiscordPush(
             @Parameter(description = "用于身份验证的API密钥", required = true, example = "ds1858dscc8745sfwe")
@@ -144,5 +163,19 @@ class Message {
         return new ResponseEntity<>(new ResponseData(
                 HttpStatus.BAD_REQUEST.value(),
                 "请求缺少必要的头部信息",
-                Map.of("缺失的头部", Exception.getHeaderName())), HttpStatus.BAD_REQUEST);}
+                Map.of("缺失的头部", Exception.getHeaderName())), HttpStatus.BAD_REQUEST); }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ResponseEntity<ResponseData> HandleMessageNotReadable(HttpMessageNotReadableException Exception, HttpServletRequest Request) {
+        log.warn("请求体无法解析：{}", Exception.getMessage());
+        return new ResponseEntity<>(new ResponseData(
+                HttpStatus.BAD_REQUEST.value(),
+                "请求体无法解析",
+                Map.of("错误信息", Exception.getMessage())), HttpStatus.BAD_REQUEST); }
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<ResponseData> HandleOtherException(Exception Exception, HttpServletRequest Request) {
+        log.error("处理请求时发生未知错误：", Exception);
+        return new ResponseEntity<>(new ResponseData(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "处理请求时发生未知错误",
+                Map.of("错误信息", Exception.getMessage() == null ? "" : Exception.getMessage()) ), HttpStatus.INTERNAL_SERVER_ERROR); }
 }
