@@ -33,6 +33,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-core:2.19.2")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.9")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
