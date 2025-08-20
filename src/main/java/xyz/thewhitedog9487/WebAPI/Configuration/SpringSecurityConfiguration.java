@@ -20,6 +20,8 @@ class SpringSecurityConfiguration {
                     AuthorizationManagerRequestMatcherRegistry
                             .requestMatchers("/ip/**", "/message/**")
                             .permitAll()
+                            .requestMatchers("/v3/api-docs/**","swagger-ui/**",  "/swagger-ui.html")
+                            .permitAll()
                             .anyRequest()
                             .denyAll(); });
         return Security.build(); }
