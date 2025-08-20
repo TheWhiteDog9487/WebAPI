@@ -3,6 +3,7 @@ package xyz.thewhitedog9487.WebAPI;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -30,15 +31,18 @@ class GlobalSharedBean {
 
     @Bean
     List<String> ApiKeyList() {
+        Path FileName = Path.of("API密钥.txt");
         try {
-            return Files.readAllLines(Path.of("API密钥.txt"), StandardCharsets.UTF_8);
+            return Files.readAllLines(FileName, StandardCharsets.UTF_8);
         } catch (IOException e) {
             try {
-                Files.createFile(Path.of("API密钥.txt"));
+                Files.createFile(FileName);
+                var DefaultPassword = RandomStringUtils.secure().nextAlphanumeric(30);
+                Files.writeString(FileName, DefaultPassword, StandardCharsets.UTF_8);
+                log.info("已生成API密钥文件，默认密钥为：{}", DefaultPassword);
+                return List.of(DefaultPassword);
             } catch (IOException e1) {
                 log.error("API密钥文件不存在且无法创建API密钥文件。", e1);
                 System.exit(-1); }
-            log.error("读取API密钥文件不存在，已生成空文件，请放置密钥。", e);
-            System.exit(-1);
             return null; } }
 }
