@@ -36,4 +36,9 @@ public class LogClientInfo extends OncePerRequestFilter {
             log.info("请求携带了CF-IPCountry头部，ISO3166代码：{}，对应的国家/地区：{}", IP, Country.getDisplayCountry(Locale.SIMPLIFIED_CHINESE)); }
         else {
             log.info("请求未携带CF-IPCountry头部，无法获取国家/地区信息。"); }
+        var UserAgent = request.getHeader("User-Agent");
+        if( UserAgent == null ){
+            log.info("请求未携带User-Agent头部，无法获取客户端软件信息。"); }
+        else{
+            log.info("请求的User-Agent：{}", UserAgent); }
         filterChain.doFilter(request, response); } }
