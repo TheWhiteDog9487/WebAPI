@@ -78,8 +78,7 @@ class SystemdInstallerManager implements CommandLineRunner {
                         .getProtectionDomain()
                         .getCodeSource()
                         .getLocation()
-                        .toURI()
-                        .getPath());
+                        .toURI());
             } catch (URISyntaxException ex) {
                 throw new RuntimeException(ex);}}}
 
