@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -35,10 +36,13 @@ class SystemdInstallerManager implements CommandLineRunner {
         """;
 
     @Autowired ObjectProvider<GatewayDiscordClient> DiscordClientProvider;
+    ApplicationHome AppHome = new ApplicationHome( SystemdInstallerManager.class );
     String CurrentOS = System.getProperty("os.name");
     String CurrentUser = System.getProperty("user.name");
     Path CurrentExecutableFilePath = GetExecutblePath();
-    Path WorkingDirectory = CurrentExecutableFilePath.getParent();
+    Path WorkingDirectory = AppHome
+            .getDir()
+            .toPath();
     Path ServiceFileDirectory = Path.of("/etc/systemd/system/");
     Path ServiceFileName = Path.of("WebAPI.service");
     String SoftLinkFileName = "Current";
@@ -73,20 +77,18 @@ class SystemdInstallerManager implements CommandLineRunner {
                 log.debug("ExecutablePath: {}", ExecutablePath);
                 return Path.of((String) ExecutablePath); }
             else{
-                log.debug("IsImageCode is false");
                 // ↓ 没有错误，但是获取Jar包位置的代码在catch里面，扔一个异常出去以进入catch分支
                 // ↓ 这个主要是针对使用GraalVM的JVM而不是Native Image的情况
                 throw new RuntimeException("Not Image Code"); }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException |
                  RuntimeException e) {
             try {
-                return Path.of(SystemdInstallerManager.class
-                        .getProtectionDomain()
-                        .getCodeSource()
-                        .getLocation()
-                        .toURI());
-            } catch (URISyntaxException ex) {
-                throw new RuntimeException(ex);}}}
+                return AppHome
+                        .getSource()
+                        .toPath()
+                        .toRealPath();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex); } } }
 
     @Override
     public void run(String... args) throws Exception {
