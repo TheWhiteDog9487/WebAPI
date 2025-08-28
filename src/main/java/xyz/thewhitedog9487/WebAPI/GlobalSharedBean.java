@@ -5,6 +5,7 @@ import discord4j.core.GatewayDiscordClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.List;
 @Component
 class GlobalSharedBean {
 
+    @Lazy
     @Bean
     GatewayDiscordClient GetDiscordClient(){
         String DiscordBotToken = System.getenv("Discord_Bot_Token");

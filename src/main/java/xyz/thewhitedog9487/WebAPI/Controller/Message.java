@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/message")
 class Message {
-    @Autowired GatewayDiscordClient DiscordBotClient;
+    @Lazy @Autowired GatewayDiscordClient DiscordBotClient;
     @Autowired List<String> ApiKeyList;
 
     @Schema(description = "包含了发送消息的数据包")
