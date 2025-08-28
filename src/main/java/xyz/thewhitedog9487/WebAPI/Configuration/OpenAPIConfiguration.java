@@ -23,7 +23,7 @@ class OpenAPIConfiguration {
                         .contact(new Contact()
                                 .name("TheWhiteDog9487")
                                 .url("https://www.github.com/TheWhiteDog9487/WebAPI"))
-                        .version("0.5.0")
+                        .version("0.5.1")
                         .license(new License()
                                 .name("WTFPL")
                                 .url("https://spdx.org/licenses/WTFPL")) )

@@ -1,6 +1,9 @@
 package xyz.thewhitedog9487.WebAPI.Startup;
 
+import discord4j.core.GatewayDiscordClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -24,11 +28,13 @@ class SystemdInstallerManager implements CommandLineRunner {
         ExecStart=%s
         Restart=always
         Type=simple
+        Environment="%s"
 
         [Install]
         WantedBy=multi-user.target
         """;
 
+    @Autowired ObjectProvider<GatewayDiscordClient> DiscordClientProvider;
     String CurrentOS = System.getProperty("os.name");
     String CurrentUser = System.getProperty("user.name");
     Path CurrentExecutableFilePath = GetExecutblePath();
@@ -86,55 +92,67 @@ class SystemdInstallerManager implements CommandLineRunner {
     public void run(String... args) throws Exception {
         for (String Argument : args) {
             if ( List.of("install", "--install").contains(Argument) == true ) {
-                    /*
-                    在Native Image / Jar文件旁边生成指向自身的，名为Current的软连接
-                    然后在软连接旁生成systemd服务文件，执行目标指向软连接
-                     */
-                    log.info("开始安装systemd服务");
-                    log.debug("SystemProperties.os.name: {}", CurrentOS);
-                    if ( CurrentOS.startsWith("Linux") ) {
-                        log.debug("SystemProperties.user.name: {}", CurrentUser);
-                        if (CurrentUser.equals("root") == false) {
-                            log.error("只有root才有权在系统层级安装systemd服务，但是JVM报告的当前用户是{}", CurrentUser);
-                            throw new IllegalStateException("请使用root用户运行此命令以安装为systemd服务"); }
-                        log.debug("CurrentExecutableFilePath: {}", CurrentExecutableFilePath);
-                        log.debug("WorkingDirectory: {}", WorkingDirectory);
-                        log.debug("SymbolicLinkPath: {}", SymbolicLinkPath);
-                        Files.deleteIfExists(SymbolicLinkPath);
-                        Files.createSymbolicLink(SymbolicLinkPath, CurrentExecutableFilePath);
-                        log.info("成功创建指向当前程序的软链接: {} -> {}", SymbolicLinkPath, CurrentExecutableFilePath);
-                        Path CurrentJavaPath = null;
-                        var IsImageCode = IsImageCode();
-                        if ( IsImageCode == false ) {
-                            CurrentJavaPath = Path.of("/proc/self/exe").toRealPath();
-                            log.debug("CurrentJavaPath: {}", CurrentJavaPath); }
-                        var ExecCommand = (IsImageCode == true) ?
-                                SymbolicLinkPath.toString() :
-                                CurrentJavaPath + " -jar " + SymbolicLinkPath.toString();
-                        log.debug("ExecCommand: {}", ExecCommand);
-                        var ServiceFileContent = String.format(
-                                TemplateContent,
-                                CurrentUser,
-                                WorkingDirectory,
-                                ExecCommand);
-                        log.debug("ServiceFileContent: \n{}", ServiceFileContent);
-                        Files.deleteIfExists( WorkingDirectory.resolve(ServiceFileName) );
-                        Files.writeString(WorkingDirectory.resolve(ServiceFileName), ServiceFileContent);
-                        log.info("成功创建systemd服务文件: {}", WorkingDirectory.resolve(ServiceFileName));
-                        Files.deleteIfExists( ServiceFileDirectory.resolve(ServiceFileName) );
-                        Files.createSymbolicLink(ServiceFileDirectory.resolve(ServiceFileName), WorkingDirectory.resolve(ServiceFileName));
-                        log.info("成功创建指向服务文件的软链接: {} -> {}", ServiceFileDirectory.resolve(ServiceFileName), WorkingDirectory.resolve(ServiceFileName));
-                        new ProcessBuilder("systemctl", "daemon-reload").start().waitFor();
-                        log.info("已完成systemd守护进程重载");
-                        new ProcessBuilder("systemctl", "enable", ServiceFileName.toString()).start().waitFor();
-                        log.info("已启用systemd服务: {}", ServiceFileName);
-                        new ProcessBuilder("systemctl", "start", ServiceFileName.toString()).start().waitFor();
-                        log.info("已启动systemd服务: {}", ServiceFileName); }
-                    else if ( CurrentOS.startsWith("Windows") ) {
-                        log.error("只有Linux才能使用systemd，但是JVM报告的当前系统是{}", CurrentOS);
-                        throw new IllegalStateException("Windows系统不支持systemd服务管理，暂不支持在Windows上自动管理服务。"); }
-                System.exit(0);
-            }
+                /*
+                在Native Image / Jar文件旁边生成指向自身的，名为Current的软连接
+                然后在软连接旁生成systemd服务文件，执行目标指向软连接
+                */
+                List<String> DiscordBotToken = Arrays.stream(args)
+                        .filter(s -> {
+                            for (String o : List.of("--Discord_Bot_Token=")) {
+                                if (s.startsWith(o) == true) { return true; } }
+                            return false; } )
+                        .toList();
+                if ( DiscordBotToken.isEmpty() == true ) {
+                    log.error("必须通过\"--Discord_Bot_Token=\"参数提供Discord机器人的令牌以使本程序正常工作。");
+                    throw new IllegalArgumentException("缺少必须的--Discord_Bot_Token参数"); }
+                log.info("开始安装systemd服务");
+                log.debug("SystemProperties.os.name: {}", CurrentOS);
+                if ( CurrentOS.startsWith("Linux") ) {
+                    log.debug("SystemProperties.user.name: {}", CurrentUser);
+                    if (CurrentUser.equals("root") == false) {
+                        log.error("只有root才有权在系统层级安装systemd服务，但是JVM报告的当前用户是{}", CurrentUser);
+                        throw new IllegalStateException("请使用root用户运行此命令以安装为systemd服务"); }
+                    log.debug("CurrentExecutableFilePath: {}", CurrentExecutableFilePath);
+                    log.debug("WorkingDirectory: {}", WorkingDirectory);
+                    log.debug("SymbolicLinkPath: {}", SymbolicLinkPath);
+                    Files.deleteIfExists(SymbolicLinkPath);
+                    Files.createSymbolicLink(SymbolicLinkPath, CurrentExecutableFilePath);
+                    log.info("成功创建指向当前程序的软链接: {} -> {}", SymbolicLinkPath, CurrentExecutableFilePath);
+                    Path CurrentJavaPath = null;
+                    var IsImageCode = IsImageCode();
+                    if ( IsImageCode == false ) {
+                        CurrentJavaPath = Path.of("/proc/self/exe").toRealPath();
+                        log.debug("CurrentJavaPath: {}", CurrentJavaPath); }
+                    var ExecCommand = (IsImageCode == true) ?
+                            SymbolicLinkPath.toString() :
+                            CurrentJavaPath + " -jar " + SymbolicLinkPath.toString();
+                    log.debug("ExecCommand: {}", ExecCommand);
+                    var ServiceFileContent = String.format(
+                            TemplateContent,
+                            CurrentUser,
+                            WorkingDirectory,
+                            ExecCommand,
+                            DiscordBotToken
+                                    .getFirst()
+                                    .substring("--"
+                                            .length()));
+                    log.debug("ServiceFileContent: \n{}", ServiceFileContent);
+                    Files.deleteIfExists( WorkingDirectory.resolve(ServiceFileName) );
+                    Files.writeString(WorkingDirectory.resolve(ServiceFileName), ServiceFileContent);
+                    log.info("成功创建systemd服务文件: {}", WorkingDirectory.resolve(ServiceFileName));
+                    Files.deleteIfExists( ServiceFileDirectory.resolve(ServiceFileName) );
+                    Files.createSymbolicLink(ServiceFileDirectory.resolve(ServiceFileName), WorkingDirectory.resolve(ServiceFileName));
+                    log.info("成功创建指向服务文件的软链接: {} -> {}", ServiceFileDirectory.resolve(ServiceFileName), WorkingDirectory.resolve(ServiceFileName));
+                    new ProcessBuilder("systemctl", "daemon-reload").start().waitFor();
+                    log.info("已完成systemd守护进程重载");
+                    new ProcessBuilder("systemctl", "enable", ServiceFileName.toString()).start().waitFor();
+                    log.info("已启用systemd服务: {}", ServiceFileName);
+                    new ProcessBuilder("systemctl", "start", ServiceFileName.toString()).start().waitFor();
+                    log.info("已启动systemd服务: {}", ServiceFileName); }
+                else if ( CurrentOS.startsWith("Windows") ) {
+                    log.error("只有Linux才能使用systemd，但是JVM报告的当前系统是{}", CurrentOS);
+                    throw new IllegalStateException("Windows系统不支持systemd服务管理，暂不支持在Windows上自动管理服务。"); }
+                System.exit(0); }
                 else if ( List.of("uninstall", "--uninstall").contains(Argument) == true ) {
                     log.info("开始卸载systemd服务");
                     log.debug("SystemProperties.os.name: {}", CurrentOS);
@@ -157,4 +175,6 @@ class SystemdInstallerManager implements CommandLineRunner {
                         log.info("成功删除指向程序自身的软链接: {}", SymbolicLinkPath);
                         new ProcessBuilder("systemctl", "daemon-reload").start().waitFor();
                         log.info("已完成systemd守护进程重载"); }
-                    System.exit(0); } } } }
+                    System.exit(0); } }
+        // ↓ 并不是安装或卸载服务，于是继续正常的启动程序，让Discord客户端连接服务器，校验API密钥是否正确并确保密钥非空
+        DiscordClientProvider.getIfAvailable(); } }
