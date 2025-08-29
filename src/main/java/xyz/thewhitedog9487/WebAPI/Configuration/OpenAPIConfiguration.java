@@ -31,9 +31,6 @@ class OpenAPIConfiguration {
                         new Server()
                                 .url("https://api.thewhitedog9487.xyz")
                                 .description("主服务器"),
-                        new Server()
-                                .url("http://localhost:12345")
-                                .description("本地开发服务器"),
                         new  Server()
                                 .url("https://dev.thewhitedog9487.xyz")
                                 .description("本地开发服务器（经过Cloudflare）") ) );} }
