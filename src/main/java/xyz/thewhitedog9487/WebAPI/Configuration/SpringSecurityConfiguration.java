@@ -2,11 +2,8 @@ package xyz.thewhitedog9487.WebAPI.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -20,7 +17,7 @@ class SpringSecurityConfiguration {
                     AuthorizationManagerRequestMatcherRegistry
                             .requestMatchers("/ip/**", "/message/**")
                             .permitAll()
-                            .requestMatchers("/v3/api-docs/**","swagger-ui/**",  "/swagger-ui.html")
+                            .requestMatchers("/", "/v3/api-docs/**","swagger-ui/**",  "/swagger-ui.html")
                             .permitAll()
                             .anyRequest()
                             .denyAll(); });
