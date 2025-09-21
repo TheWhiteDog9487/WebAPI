@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "xyz.thewhitedog9487"
-version = "0.5.3"
+version = "0.6.0"
 
 java {
 	toolchain {
@@ -34,7 +34,7 @@ dependencies {
     implementation("org.hibernate.orm:hibernate-community-dialects")
 	implementation("com.discord4j:discord4j-core:3.2.8")
 	implementation("com.fasterxml.jackson.core:jackson-core:2.19.2")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.9")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 	compileOnly("org.projectlombok:lombok")

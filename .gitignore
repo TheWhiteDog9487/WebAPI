@@ -37,3 +37,4 @@ out/
 .vscode/
 
 API密钥.txt
+SQLiteDataBase.db
