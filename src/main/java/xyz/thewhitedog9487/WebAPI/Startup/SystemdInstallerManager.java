@@ -1,12 +1,8 @@
 package xyz.thewhitedog9487.WebAPI.Startup;
 
-import discord4j.core.GatewayDiscordClient;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.system.ApplicationHome;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -16,8 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@Component
-class SystemdInstallerManager implements CommandLineRunner {
+public class SystemdInstallerManager{
     static String TemplateContent = """
         [Unit]
         Description=WebAPI
@@ -35,23 +30,22 @@ class SystemdInstallerManager implements CommandLineRunner {
         WantedBy=multi-user.target
         """;
 
-    @Autowired ObjectProvider<GatewayDiscordClient> DiscordClientProvider;
-    ApplicationHome AppHome = new ApplicationHome( SystemdInstallerManager.class );
-    String CurrentOS = System.getProperty("os.name");
-    String CurrentUser = System.getProperty("user.name");
-    Path CurrentExecutableFilePath = GetExecutblePath();
-    Path WorkingDirectory = AppHome
+    static ApplicationHome AppHome = new ApplicationHome( SystemdInstallerManager.class );
+    static String CurrentOS = System.getProperty("os.name");
+    static String CurrentUser = System.getProperty("user.name");
+    static Path CurrentExecutableFilePath = GetExecutblePath();
+    static Path WorkingDirectory = AppHome
             .getDir()
             .toPath();
-    Path ServiceFileDirectory = Path.of("/etc/systemd/system/");
-    Path ServiceFileName = Path.of("WebAPI.service");
-    String SoftLinkFileName = "Current";
-    Path SymbolicLinkPath = WorkingDirectory.resolve(SoftLinkFileName);
+    static Path ServiceFileDirectory = Path.of("/etc/systemd/system/");
+    static Path ServiceFileName = Path.of("WebAPI.service");
+    static String SoftLinkFileName = "Current";
+    static Path SymbolicLinkPath = WorkingDirectory.resolve(SoftLinkFileName);
 
     /**
      * 检测当前运行环境是否为GraalVM生成的Native Image
      */
-    boolean IsImageCode(){
+    static boolean IsImageCode(){
         try {
             return (boolean) Class.forName("org.graalvm.nativeimage.ImageInfo")
                     .getMethod("inImageCode")
@@ -66,7 +60,7 @@ class SystemdInstallerManager implements CommandLineRunner {
      * <br>
      * 如果是直接用JRE运行的JAR包，则返回JAR文件的路径
      */
-    Path GetExecutblePath(){
+    static Path GetExecutblePath(){
         try {
             var IsImageCode = IsImageCode();
             log.debug("IsImageCode: {}", IsImageCode);
@@ -90,15 +84,16 @@ class SystemdInstallerManager implements CommandLineRunner {
             } catch (IOException ex) {
                 throw new RuntimeException(ex); } } }
 
-    @Override
-    public void run(String... args) throws Exception {
-        for (String Argument : args) {
+    @SneakyThrows
+    public static void ProcessArguments(String[] CommandLineArguments) {
+        log.debug("CommandLineArguments: {}", Arrays.toString(CommandLineArguments));
+        for (String Argument : CommandLineArguments) {
             if ( List.of("install", "--install").contains(Argument) == true ) {
                 /*
                 在Native Image / Jar文件旁边生成指向自身的，名为Current的软连接
                 然后在软连接旁生成systemd服务文件，执行目标指向软连接
                 */
-                List<String> DiscordBotToken = Arrays.stream(args)
+                List<String> DiscordBotToken = Arrays.stream(CommandLineArguments)
                         .filter(s -> {
                             for (String o : List.of("--Discord_Bot_Token=")) {
                                 if (s.startsWith(o) == true) { return true; } }
@@ -117,6 +112,8 @@ class SystemdInstallerManager implements CommandLineRunner {
                     log.debug("CurrentExecutableFilePath: {}", CurrentExecutableFilePath);
                     log.debug("WorkingDirectory: {}", WorkingDirectory);
                     log.debug("SymbolicLinkPath: {}", SymbolicLinkPath);
+                    new ProcessBuilder("systemctl", "stop", ServiceFileName.toString()).start().waitFor();
+                    log.info("已停止systemd服务: {}", ServiceFileName);
                     Files.deleteIfExists(SymbolicLinkPath);
                     Files.createSymbolicLink(SymbolicLinkPath, CurrentExecutableFilePath);
                     log.info("成功创建指向当前程序的软链接: {} -> {}", SymbolicLinkPath, CurrentExecutableFilePath);
