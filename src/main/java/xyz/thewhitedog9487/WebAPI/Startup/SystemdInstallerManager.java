@@ -174,6 +174,5 @@ public class SystemdInstallerManager{
                         log.info("成功删除指向程序自身的软链接: {}", SymbolicLinkPath);
                         new ProcessBuilder("systemctl", "daemon-reload").start().waitFor();
                         log.info("已完成systemd守护进程重载"); }
-                    System.exit(0); } }
-        // ↓ 并不是安装或卸载服务，于是继续正常的启动程序，让Discord客户端连接服务器，校验API密钥是否正确并确保密钥非空
-        DiscordClientProvider.getIfAvailable(); } }
+                    System.exit(0); } } }
+}

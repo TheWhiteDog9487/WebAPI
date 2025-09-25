@@ -30,7 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/message")
 class Message {
-    @Lazy @Autowired GatewayDiscordClient DiscordBotClient;
+    @Autowired GatewayDiscordClient DiscordBotClient;
     @Autowired List<String> ApiKeyList;
 
     @Schema(description = "包含了发送消息的数据包")

@@ -18,7 +18,6 @@ import java.util.List;
 @Component
 class GlobalSharedBean {
 
-    @Lazy
     @Bean
     GatewayDiscordClient GetDiscordClient(){
         String DiscordBotToken = System.getenv("Discord_Bot_Token");
