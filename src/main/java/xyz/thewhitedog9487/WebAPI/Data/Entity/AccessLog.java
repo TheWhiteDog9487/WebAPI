@@ -48,6 +48,13 @@ public class AccessLog{
 
         @JsonProperty("HttpMethod")
         String HttpMethod;
+
+        @JsonProperty("Protocol")
+        String Protocol;
+
+        @JsonProperty("ProtocolVersion")
+        String ProtocolVersion;
+
         @JsonProperty("URL")
         String URL;
 
@@ -60,3 +67,11 @@ public class AccessLog{
 
         @JsonProperty("Timestamp")
         Instant Timestamp;
+
+        @JsonProperty("ResponseStatusCode")
+        Integer ResponseStatusCode;
+
+        @JsonProperty("ResponseBody")
+        @Column(columnDefinition = "text")
+        String ResponseBody;
+}
