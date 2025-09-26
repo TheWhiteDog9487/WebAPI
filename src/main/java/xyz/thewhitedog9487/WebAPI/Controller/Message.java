@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -117,7 +116,6 @@ class Message {
     @PostMapping("/discord")
     ResponseEntity<ResponseData> DiscordPush(
             @Parameter(description = "用于身份验证的API密钥", required = true, example = "ds1858dscc8745sfwe")
-            @RequestHeader(value = "X-API-Key", required = true) String ApiKey,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 description = "包含频道ID和消息内容的JSON对象",
                 required = true,
@@ -125,12 +123,6 @@ class Message {
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = PostMessageData.class) ) )
             @RequestBody PostMessageData RequestBody){
-        if ( ApiKeyList.contains(ApiKey) == false ) {
-            log.warn("API密钥验证失败，密钥：{}", ApiKey);
-            return new ResponseEntity<>(new ResponseData(
-                    HttpStatus.UNAUTHORIZED.value(),
-                    "API密钥验证失败",
-                    Map.of("提供的密钥", ApiKey)), HttpStatus.UNAUTHORIZED); }
 
         var ChannelID = Snowflake.of(RequestBody.ChannelID);
         log.info("准备向{}发送消息: {}", ChannelID.asString(), RequestBody.Content);

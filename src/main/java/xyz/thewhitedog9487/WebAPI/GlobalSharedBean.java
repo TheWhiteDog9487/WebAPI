@@ -5,8 +5,8 @@ import discord4j.core.GatewayDiscordClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import xyz.thewhitedog9487.WebAPI.Configuration.Security.ApiKeyAuthenticationFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -46,4 +46,8 @@ class GlobalSharedBean {
                 log.error("API密钥文件不存在且无法创建API密钥文件。", e1);
                 System.exit(-1); }
             return null; } }
+
+    @Bean
+    ApiKeyAuthenticationFilter ApiKeyAuthenticationFilter(){
+        return new ApiKeyAuthenticationFilter(); }
 }
