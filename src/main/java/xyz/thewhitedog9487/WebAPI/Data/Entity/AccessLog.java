@@ -1,5 +1,6 @@
 package xyz.thewhitedog9487.WebAPI.Data.Entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,17 +19,44 @@ public class AccessLog{
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(nullable = false)
+        @JsonProperty("ID")
         Long ID;
 
+        @JsonProperty("RequestID")
         String RequestID;
-        @Column(name = "\"CF-Connecting-IP\"") String CF_Connecting_IP;
-        @Column(name = "\"X-Forwarded-For\"") String X_Forwarded_For;
+
+        @JsonProperty("CF_Connecting_IP")
+        @Column(name = "\"CF-Connecting-IP\"")
+        String CF_Connecting_IP;
+
+        @JsonProperty("X_Forwarded_For")
+        @Column(name = "\"X-Forwarded-For\"")
+        String X_Forwarded_For;
+
+        @JsonProperty("RemoteAddress")
         String RemoteAddress;
-        @Column(name = "\"CF-IPCountry\"") String CF_IPCountry;
+
+        @JsonProperty("CF_IPCountry")
+        @Column(name = "\"CF-IPCountry\"")
+        String CF_IPCountry;
+
+        @JsonProperty("ISO3166")
         String ISO3166;
+
+        @JsonProperty("UserAgent")
         String UserAgent;
+
+        @JsonProperty("HttpMethod")
         String HttpMethod;
+        @JsonProperty("URL")
         String URL;
+
+        @JsonProperty("QueryString")
         String QueryString;
-        @Column(columnDefinition = "text") String Header;
-        Instant Timestamp; }
+
+        @JsonProperty("Header")
+        @Column(columnDefinition = "text")
+        String Header;
+
+        @JsonProperty("Timestamp")
+        Instant Timestamp;
