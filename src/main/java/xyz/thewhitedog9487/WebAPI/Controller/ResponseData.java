@@ -26,4 +26,10 @@ public record ResponseData(
             return JsonMapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e); } }
+
+    public static String AnyToJson(Object obj){
+        try {
+            return JsonMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e); } }
 }
