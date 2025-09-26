@@ -38,3 +38,4 @@ out/
 
 API密钥.txt
 SQLiteDataBase.db
+*.http
