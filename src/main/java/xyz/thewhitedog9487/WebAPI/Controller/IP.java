@@ -84,7 +84,6 @@ class IP {
                     MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
                     HttpStatus.OK); }
         else {
-            log.warn("请求尝试获取其ip对应的iso3166代码，但是我们没有找到CF-IPCountry头部");
             return new ResponseEntity<>("未找到CF-IPCountry头部",
                     MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
                     HttpStatus.NOT_FOUND); } }

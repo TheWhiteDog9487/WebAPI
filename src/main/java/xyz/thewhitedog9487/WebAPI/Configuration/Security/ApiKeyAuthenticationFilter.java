@@ -52,7 +52,6 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String ApiKey = request.getHeader("X-API-Key");
         if (ApiKey == null) {
-            log.warn("API密钥验证失败，未传递X-API-Key请求头");
             var ResponseBody = new ResponseData(
                     HttpStatus.UNAUTHORIZED.value(),
                     "API密钥验证失败，未传递X-API-Key请求头");
@@ -92,7 +91,6 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(Auth);
             filterChain.doFilter(request, response);
         } else {
-            log.warn("API密钥验证失败，密钥：{}", ApiKey);
             var ResponseBody = new ResponseData(
                     HttpStatus.UNAUTHORIZED.value(),
                     "API密钥验证失败",
