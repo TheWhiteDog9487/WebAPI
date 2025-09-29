@@ -22,7 +22,8 @@ public class LogClientInfo implements Filter {
     public static List<String> IgnorePaths = List.of(
             "/favicon.ico",
             "/swagger-ui",
-            "/v3/api-docs" );
+            "/v3/api-docs",
+            "/accesslog");
 
     @Autowired AccessLogRepository AccessLogRepository;
 
