@@ -31,7 +31,6 @@ import java.util.Map;
 @RequestMapping("/message")
 class Message {
     @Autowired GatewayDiscordClient DiscordBotClient;
-    @Autowired List<String> ApiKeyList;
 
     @Schema(description = "包含了发送消息的数据包")
     record PostMessageData(
