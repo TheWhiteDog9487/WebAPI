@@ -13,11 +13,17 @@ import xyz.thewhitedog9487.WebAPI.Data.Repository.AccessLogRepository;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 @Slf4j
 @Component
 public class LogClientInfo implements Filter {
+    public static List<String> IgnorePaths = List.of(
+            "/favicon.ico",
+            "/swagger-ui",
+            "/v3/api-docs" );
+
     @Autowired AccessLogRepository AccessLogRepository;
 
     @Override
@@ -49,7 +55,9 @@ public class LogClientInfo implements Filter {
                 null );
         Log = AccessLogRepository.save(Log);
         chain.doFilter(request, Response);
-        var ResponseBody = new String( Response.getContentAsByteArray(), Response.getCharacterEncoding() );
+        var ResponseBody = IgnorePaths.stream()
+                .anyMatch( path -> HttpServletRequest.getRequestURI().startsWith(path) )
+                ? null : new String( Response.getContentAsByteArray(), Response.getCharacterEncoding() );
         Log.setResponseStatusCode(HttpServletResponse.getStatus());
         Log.setResponseBody(ResponseBody);
         AccessLogRepository.save(Log);
