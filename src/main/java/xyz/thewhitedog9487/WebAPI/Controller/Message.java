@@ -5,6 +5,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.rest.http.client.ClientException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -115,7 +116,8 @@ class Message {
                             """) } )
     @PostMapping("/discord")
     ResponseEntity<ResponseData> DiscordPush(
-            @Parameter(description = "用于身份验证的API密钥", required = true, example = "ds1858dscc8745sfwe")
+            @Parameter(description = "用于身份验证的API密钥", in = ParameterIn.HEADER, required = true, example = "ds1858dscc8745sfwe")
+            @RequestHeader("X-API-Key") String ApiKey,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                 description = "包含频道ID和消息内容的JSON对象",
                 required = true,
