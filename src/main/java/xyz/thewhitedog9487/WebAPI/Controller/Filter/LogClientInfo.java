@@ -48,7 +48,7 @@ public class LogClientInfo implements Filter {
                 HttpServletRequest.getQueryString(),
                 Collections.list( HttpServletRequest.getHeaderNames() )
                         .stream()
-                        .map( name -> name + ": " + Collections.list(HttpServletRequest.getHeaders(name)) )
+                        .map( name -> name + ": " + Collections.list(HttpServletRequest.getHeaders(name)).getFirst() )
                         .reduce( ( a, b ) -> a + "\n" + b )
                         .orElse(""),
                 Instant.now(),
