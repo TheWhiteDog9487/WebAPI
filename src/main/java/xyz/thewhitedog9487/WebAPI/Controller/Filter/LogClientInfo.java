@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
 
 @Slf4j
 @Component
@@ -26,6 +27,7 @@ public class LogClientInfo implements Filter {
             "/accesslog");
 
     @Autowired AccessLogRepository AccessLogRepository;
+    @Autowired Lock SQLiteWriteLock;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -54,12 +56,16 @@ public class LogClientInfo implements Filter {
                 Instant.now(),
                 null,
                 null );
+        SQLiteWriteLock.lock();
         Log = AccessLogRepository.save(Log);
+        SQLiteWriteLock.unlock();
         chain.doFilter(request, Response);
         var ResponseBody = IgnorePaths.stream()
                 .anyMatch( path -> HttpServletRequest.getRequestURI().startsWith(path) )
                 ? null : new String( Response.getContentAsByteArray(), Response.getCharacterEncoding() );
         Log.setResponseStatusCode(HttpServletResponse.getStatus());
         Log.setResponseBody(ResponseBody);
+        SQLiteWriteLock.lock();
         AccessLogRepository.save(Log);
+        SQLiteWriteLock.unlock();
         Response.copyBodyToResponse(); } }

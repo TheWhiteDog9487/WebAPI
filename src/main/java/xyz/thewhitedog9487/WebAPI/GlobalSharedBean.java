@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
@@ -50,4 +52,8 @@ class GlobalSharedBean {
     @Bean
     ApiKeyAuthenticationFilter ApiKeyAuthenticationFilter(){
         return new ApiKeyAuthenticationFilter(); }
+
+    @Bean
+    Lock SQLiteWriteLock(){
+        return new ReentrantLock(); }
 }
