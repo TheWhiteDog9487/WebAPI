@@ -56,16 +56,24 @@ public class LogClientInfo implements Filter {
                 Instant.now(),
                 null,
                 null );
-        SQLiteWriteLock.lock();
-        Log = AccessLogRepository.save(Log);
-        SQLiteWriteLock.unlock();
+        try {
+            SQLiteWriteLock.lock();
+            Log = AccessLogRepository.save(Log); }
+        catch (Exception e) {
+            log.error(e.getLocalizedMessage()); }
+        finally {
+            SQLiteWriteLock.unlock(); }
         chain.doFilter(request, Response);
         var ResponseBody = IgnorePaths.stream()
                 .anyMatch( path -> HttpServletRequest.getRequestURI().startsWith(path) )
                 ? null : new String( Response.getContentAsByteArray(), Response.getCharacterEncoding() );
         Log.setResponseStatusCode(HttpServletResponse.getStatus());
         Log.setResponseBody(ResponseBody);
-        SQLiteWriteLock.lock();
-        AccessLogRepository.save(Log);
-        SQLiteWriteLock.unlock();
+        try {
+            SQLiteWriteLock.lock();
+            AccessLogRepository.save(Log); }
+        catch (Exception e) {
+            log.error(e.getLocalizedMessage()); }
+        finally {
+            SQLiteWriteLock.unlock(); }
         Response.copyBodyToResponse(); } }
