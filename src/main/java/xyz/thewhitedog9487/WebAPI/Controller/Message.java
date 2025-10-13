@@ -55,38 +55,39 @@ class Message {
                                 "    \"内容\": \"写点什么好呢\",\n" +
                                 "    \"频道ID\": \"1398192763845214239\"\n" +
                                 "  }\n" +
-                                "}") ),
+                                "}", name = "成功") ),
                     description = "消息发送成功，响应体中包含新消息的ID、频道ID和内容"),
             @ApiResponse(responseCode = "400",
                     content = @Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = @Schema(implementation = ResponseData.class),
-                        examples = { @ExampleObject(value = "{\n" +
-                                "  \"code\": 400,\n" +
-                                "  \"message\": \"请求缺少必要的头部信息\",\n" +
-                                "  \"data\": {\n" +
-                                "    \"缺失的头部\": \"X-API-Key\"\n" +
-                                "  }\n" +
-                                "}", name = "缺少头部信息") ,
-                                @ExampleObject(value = "{\n" +
-                                "  \"code\": 400,\n" +
-                                "  \"message\": \"请求体无法解析\",\n" +
-                                "  \"data\": {\n" +
-                                "    \"错误信息\": \"JSON parse error: Unexpected character ('}' (code 125)): was expecting double-quote to start field name\"\n" +
-                                "  }\n" +
-                                "}", name = "请求体无法解析") } ),
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ResponseData.class),
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"code\": 400,\n" +
+                                    "  \"message\": \"请求体无法解析\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"错误信息\": \"JSON parse error: Unexpected character ('}' (code 125)): was expecting double-quote to start field name\"\n" +
+                                    "  }\n" +
+                                    "}", name = "请求体无法解析") ),
                     description = "客户端发送的请求存在问题，请检查响应的data字段以获取更多信息"),
             @ApiResponse(responseCode = "401",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ResponseData.class),
-                            examples = @ExampleObject(value = "{\n" +
-                                    "  \"code\": 401,\n" +
-                                    "  \"message\": \"API密钥验证失败\",\n" +
-                                    "  \"data\": {\n" +
-                                    "    \"提供的密钥\": \"123456\"\n" +
-                                    "  }\n" +
-                                    "}") ),
+                            examples = {
+                                    @ExampleObject(value = "{\n" +
+                                            "  \"code\": 401,\n" +
+                                            "  \"message\": \"请求缺少必要的头部信息\",\n" +
+                                            "  \"data\": {\n" +
+                                            "    \"缺失的头部\": \"X-API-Key\"\n" +
+                                            "  }\n" +
+                                            "}", name = "缺少头部信息"),
+                                    @ExampleObject(value = "{\n" +
+                                            "  \"code\": 401,\n" +
+                                            "  \"message\": \"API密钥验证失败\",\n" +
+                                            "  \"data\": {\n" +
+                                            "    \"提供的密钥\": \"123456\"\n" +
+                                            "  }\n" +
+                                            "}", name = "密钥不正确") } ),
                     description = "API密钥验证失败"),
             @ApiResponse(responseCode = "500",
                     content = @Content(
