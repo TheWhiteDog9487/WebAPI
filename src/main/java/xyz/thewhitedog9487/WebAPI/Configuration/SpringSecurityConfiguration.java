@@ -27,7 +27,7 @@ class SpringSecurityConfiguration {
                             .permitAll()
                             .requestMatchers("/", "/v3/api-docs/**","swagger-ui/**",  "/swagger-ui.html")
                             .permitAll()
-                            .requestMatchers("/message/**")
+                            .requestMatchers("/message/**", "/accesslog/**")
                             .authenticated()
                             .anyRequest()
                             .denyAll(); })
