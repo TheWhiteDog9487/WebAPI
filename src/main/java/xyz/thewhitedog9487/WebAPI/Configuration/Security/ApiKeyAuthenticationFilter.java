@@ -30,7 +30,7 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
     AccessLogRepository AccessLogRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String ApiKey = request.getHeader("X-API-Key");
         if (ApiKey == null) {
             var ResponseBody = new ResponseData(
