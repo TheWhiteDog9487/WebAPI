@@ -50,10 +50,6 @@ class GlobalSharedBean {
             return null; } }
 
     @Bean
-    ApiKeyAuthenticationFilter ApiKeyAuthenticationFilter(){
-        return new ApiKeyAuthenticationFilter(); }
-
-    @Bean
     Lock SQLiteWriteLock(){
         return new ReentrantLock(); }
 }

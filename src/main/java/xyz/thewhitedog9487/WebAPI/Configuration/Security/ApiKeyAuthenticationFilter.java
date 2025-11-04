@@ -4,13 +4,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import xyz.thewhitedog9487.WebAPI.Controller.ResponseData;
 import xyz.thewhitedog9487.WebAPI.Data.Entity.AccessLog;
@@ -24,29 +23,11 @@ import java.util.Locale;
 import java.util.Map;
 
 @Slf4j
-@Component
+@AllArgsConstructor
 public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired List<String> ApiKeyList;
-    @Autowired AccessLogRepository AccessLogRepository;
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        var ServletPath = request.getServletPath();
-        var PermitPrefix = List.of(
-                "/ip/",
-                "/v3/api-docs",
-                "/swagger-ui/" );
-        var FullyMatchList = List.of(
-                "/",
-                "/swagger-ui.html" );
-        for (String Prefix : PermitPrefix) {
-            if ( ServletPath.startsWith(Prefix) ) {
-                return true; } }
-        for (String FullyMatch : FullyMatchList) {
-            if ( ServletPath.equals(FullyMatch) ) {
-                return true; } }
-        return false; }
+    List<String> ApiKeyList;
+    AccessLogRepository AccessLogRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
