@@ -43,14 +43,6 @@ jobs:
           run: chmod +x ./gradlew
         - name: 构建原生镜像
           run: ./gradlew nativeCompile -x test
-        - name: 规范文件名并删除无用文件(Windows)
-          if: runner.os == 'Windows'
-          run: |
-            Get-ChildItem -Path build/native/nativeCompile -File | Where-Object { $_.Name -notlike "*.exe" } | Remove-Item -Force
-            Rename-Item -Path build/native/nativeCompile/*.exe -NewName ${{ runner.os }}-${{ runner.arch }}.exe
-        - name: 规范文件名(非Windows)
-          if: runner.os != 'Windows'
-          run: mv build/native/nativeCompile/* build/native/nativeCompile/${{ runner.os }}-${{ runner.arch }}
         - name: 上传构建产物
           uses: actions/upload-artifact@v4
           with:
