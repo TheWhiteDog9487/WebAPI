@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import xyz.thewhitedog9487.WebAPI.Configuration.Security.ApiKeyAuthenticationFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +18,6 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 @Component
 class GlobalSharedBean {
-
     @Bean
     GatewayDiscordClient GetDiscordClient(){
         String DiscordBotToken = System.getenv("Discord_Bot_Token");

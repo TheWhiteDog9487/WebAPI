@@ -49,7 +49,7 @@ class RegisterGraalVMBuildHints implements RuntimeHintsRegistrar{
                     hints.reflection().registerType(clazz,b -> b.withMembers(
                         MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
                         MemberCategory.INVOKE_DECLARED_METHODS,
-                        MemberCategory.DECLARED_FIELDS));
+                        MemberCategory.ACCESS_DECLARED_FIELDS));
                     ok++;
                 } catch (Throwable e) {
                     // 有些类可能因缺失依赖/被 JDK 模块限制而加载失败，跳过即可
@@ -65,7 +65,7 @@ class RegisterGraalVMBuildHints implements RuntimeHintsRegistrar{
             builder -> builder.withMembers(
                 MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
                 MemberCategory.INVOKE_DECLARED_METHODS,
-                MemberCategory.DECLARED_FIELDS
+                MemberCategory.ACCESS_DECLARED_FIELDS
             )
         );
 
@@ -74,7 +74,7 @@ class RegisterGraalVMBuildHints implements RuntimeHintsRegistrar{
             builder -> builder.withMembers(
                 MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
                 MemberCategory.INVOKE_DECLARED_METHODS,
-                MemberCategory.DECLARED_FIELDS
+                MemberCategory.ACCESS_DECLARED_FIELDS
             )
         );
 
@@ -83,7 +83,7 @@ class RegisterGraalVMBuildHints implements RuntimeHintsRegistrar{
             builder -> builder.withMembers(
                 MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
                 MemberCategory.INVOKE_DECLARED_METHODS,
-                MemberCategory.DECLARED_FIELDS
+                MemberCategory.ACCESS_DECLARED_FIELDS
             )
         );
 
@@ -92,7 +92,7 @@ class RegisterGraalVMBuildHints implements RuntimeHintsRegistrar{
             builder -> builder.withMembers(
                 MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
                 MemberCategory.INVOKE_DECLARED_METHODS,
-                MemberCategory.DECLARED_FIELDS
+                MemberCategory.ACCESS_DECLARED_FIELDS
             )
         );
 
