@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,25 +39,21 @@ class IP {
                     examples = @ExampleObject(value = "78.141.226.247")),
             description = "成功获取到IP地址，内容为纯文本格式的IP地址")
     @GetMapping("/ip")
-    ResponseEntity<String> GetIP(@RequestHeader Map<String, String> HttpHeader, HttpServletRequest Request) {
-        if ( HttpHeader.get("CF-Connecting-IP".toLowerCase() ) instanceof String IP) {
-            /*
-            ↑ 如果成功完成instanceof模式匹配，那么模式变量一定非空
-            相当于是：
-            if ( HttpHeader.get("CF-Connecting-IP".toLowerCase() ) != null ) {
-                String IP = HttpHeader.get( "CF-Connecting-IP".toLowerCase() ); }
-            */
-            return new ResponseEntity<>(IP,
-                    MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
+    ResponseEntity<String> GetIP(@RequestHeader("CF-COnnecting-IP") String Header_CFConnectingIP,
+                                 @RequestHeader("X-Forwarded-For") String Header_XForwardedFor,
+                                 HttpServletRequest Request) {
+        if (Header_CFConnectingIP != null) {
+            return new ResponseEntity<>(Header_CFConnectingIP,
+                    new HttpHeaders(MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8"))),
                     HttpStatus.OK); }
-        else if (HttpHeader.get("X-Forwarded-For".toLowerCase()) instanceof String IP) {
-                IP = IP.split(",")[0].trim();
-                return new ResponseEntity<>(IP,
-                        MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
+        else if (Header_XForwardedFor != null) {
+                Header_XForwardedFor = Header_XForwardedFor.split(",")[0].trim();
+                return new ResponseEntity<>(Header_XForwardedFor,
+                        new HttpHeaders(MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8"))),
                         HttpStatus.OK); }
         else {
             return new ResponseEntity<>(Request.getRemoteAddr(),
-                    MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
+                    new HttpHeaders(MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8"))),
                     HttpStatus.OK); } }
 
     @Operation(summary = "获取请求客户端的ISO 3166-1 alpha-2国家代码", description = """
@@ -78,13 +75,13 @@ class IP {
                             examples = { @ExampleObject(value = "未找到CF-IPCountry头部") } ),
                     description = "未找到CF-IPCountry头部，内容为纯文本格式的错误信息") } )
     @GetMapping("iso3166")
-    ResponseEntity<String> GetISO3166(@RequestHeader Map<String, String> HttpHeader) {
-        if (HttpHeader.get("CF-IPCountry".toLowerCase()) instanceof String CountryCode) {
-            return new ResponseEntity<>(CountryCode,
-                    MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
+    ResponseEntity<String> GetISO3166(@RequestHeader("CF-IPCountry") String Header_CFIPCountry) {
+        if (Header_CFIPCountry != null) {
+            return new ResponseEntity<>(Header_CFIPCountry,
+                    new HttpHeaders(MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8"))),
                     HttpStatus.OK); }
         else {
             return new ResponseEntity<>("未找到CF-IPCountry头部",
-                    MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8")),
+                    new HttpHeaders(MultiValueMap.fromSingleValue(Map.of("Content-Type", "text/plain;charset=UTF-8"))),
                     HttpStatus.NOT_FOUND); } }
 }
