@@ -42,6 +42,16 @@ jobs:
           if: runner.os != 'Windows'
           run: chmod +x ./gradlew
         - name: 构建原生镜像
+          if: runner.os == 'Windows'
+          env:
+            # Needed for Windows; to resolve issue with temp folder during native image build, due to relativization
+            # problem when different drives are used, such as in GHA runners.
+            # https://github.com/graalvm/native-build-tools/issues/754
+            # https://github.com/bric3/jufmt/commit/feb040f159b9a5168d677455218b787d9b644ee2
+            GRADLE_OPTS: -Djava.io.tmpdir=${{ runner.temp }}
+          run: ./gradlew nativeCompile -x test
+        - name: 构建原生镜像
+          if: runner.os != 'Windows'
           run: ./gradlew nativeCompile -x test
         - name: 上传构建产物
           uses: actions/upload-artifact@v4
