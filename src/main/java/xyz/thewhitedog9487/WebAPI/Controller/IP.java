@@ -38,7 +38,7 @@ class IP {
                     schema = @Schema(implementation = String.class),
                     examples = @ExampleObject(value = "78.141.226.247")),
             description = "成功获取到IP地址，内容为纯文本格式的IP地址")
-    @GetMapping("/ip")
+    @GetMapping({"/ip", "", "/"})
     ResponseEntity<String> GetIP(@RequestHeader("CF-COnnecting-IP") String Header_CFConnectingIP,
                                  @RequestHeader("X-Forwarded-For") String Header_XForwardedFor,
                                  HttpServletRequest Request) {
