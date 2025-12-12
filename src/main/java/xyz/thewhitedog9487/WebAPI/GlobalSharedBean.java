@@ -4,6 +4,7 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -18,17 +19,17 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 @Component
 class GlobalSharedBean {
+    @Value("${Discord_Bot_Token:}") String DiscordBotToken;
+
     @Bean
     GatewayDiscordClient GetDiscordClient(){
-        String DiscordBotToken = System.getenv("Discord_Bot_Token");
-        if (DiscordBotToken == null) {
+        if (DiscordBotToken.isEmpty()) {
             log.error("未设置环境变量Discord_Bot_Token，请检查配置。");
             System.exit(-1); }
         return DiscordClientBuilder.create(DiscordBotToken)
                 .build()
                 .login()
                 .block();}
-        // TODO: ↑ 看看能不能优化下启动性能
 
     @Bean
     List<String> ApiKeyList() {

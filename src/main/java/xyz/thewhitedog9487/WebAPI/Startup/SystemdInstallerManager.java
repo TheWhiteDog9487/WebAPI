@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 public class SystemdInstallerManager{
@@ -41,7 +42,7 @@ public class SystemdInstallerManager{
     static Path ServiceFileName = Path.of("WebAPI.service");
     static String SoftLinkFileName = "Current";
     static Path SymbolicLinkPath = WorkingDirectory.resolve(SoftLinkFileName);
-
+    static String DiscordBotToken = System.getenv("Discord_Bot_Token");
     /**
      * 检测当前运行环境是否为GraalVM生成的Native Image
      */
@@ -93,14 +94,16 @@ public class SystemdInstallerManager{
                 在Native Image / Jar文件旁边生成指向自身的，名为Current的软连接
                 然后在软连接旁生成systemd服务文件，执行目标指向软连接
                 */
-                List<String> DiscordBotToken = Arrays.stream(CommandLineArguments)
-                        .filter(s -> {
-                            for (String o : List.of("--Discord_Bot_Token=")) {
-                                if (s.startsWith(o) == true) { return true; } }
-                            return false; } )
-                        .toList();
-                if ( DiscordBotToken.isEmpty() == true ) {
-                    log.error("必须通过\"--Discord_Bot_Token=\"参数提供Discord机器人的令牌以使本程序正常工作。");
+                try {
+                    DiscordBotToken = Arrays.stream(CommandLineArguments)
+                            .filter(s -> s.startsWith("--Discord_Bot_Token=") == true)
+                            .toList()
+                            .getFirst()
+                            .substring("--"
+                                    .length()); }
+                catch (NoSuchElementException _){ }
+                if ( DiscordBotToken == null ) {
+                    log.error("必须通过\"--Discord_Bot_Token=\"参数或Discord_Bot_Token环境变量提供Discord机器人的令牌以使本程序正常工作。");
                     throw new IllegalArgumentException("缺少必须的--Discord_Bot_Token参数"); }
                 log.info("开始安装systemd服务");
                 log.debug("SystemProperties.os.name: {}", CurrentOS);
@@ -131,10 +134,7 @@ public class SystemdInstallerManager{
                             CurrentUser,
                             WorkingDirectory,
                             ExecCommand,
-                            DiscordBotToken
-                                    .getFirst()
-                                    .substring("--"
-                                            .length()));
+                            "Discord_Bot_Token=" + DiscordBotToken);
                     log.debug("ServiceFileContent: \n{}", ServiceFileContent);
                     Files.deleteIfExists( WorkingDirectory.resolve(ServiceFileName) );
                     Files.writeString(WorkingDirectory.resolve(ServiceFileName), ServiceFileContent);
