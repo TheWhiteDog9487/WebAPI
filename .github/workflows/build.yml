@@ -2,6 +2,7 @@ name: 构建
 on:
   workflow_dispatch:
   push:
+  pull_request:
 
 jobs:
     build-jar:
@@ -24,36 +25,36 @@ jobs:
             with:
               name: WebAPI Jar
               path: build/libs/*boot*.jar
-    build-native:
-      runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          os: [macos-latest, windows-latest, ubuntu-latest]
-      steps:
-        - name: 签出仓库
-          uses: actions/checkout@v7
-        - name: 安装GraalVM
-          uses: graalvm/setup-graalvm@v1
-          with:
-            java-version: '25'
-            distribution: 'liberica'
-        - name: 让gradlew可执行
-          if: runner.os != 'Windows'
-          run: chmod +x ./gradlew
-        - name: 构建原生镜像
-          if: runner.os == 'Windows'
-          env:
-            # Needed for Windows; to resolve issue with temp folder during native image build, due to relativization
-            # problem when different drives are used, such as in GHA runners.
-            # https://github.com/graalvm/native-build-tools/issues/754
-            # https://github.com/bric3/jufmt/commit/feb040f159b9a5168d677455218b787d9b644ee2
-            GRADLE_OPTS: -Djava.io.tmpdir=${{ runner.temp }}
-          run: ./gradlew nativeCompile
-        - name: 构建原生镜像
-          if: runner.os != 'Windows'
-          run: ./gradlew nativeCompile
-        - name: 上传构建产物
-          uses: actions/upload-artifact@v7
-          with:
-            name: WebAPI Native Image ${{ runner.os }} ${{ runner.arch }}
-            path: build/native/nativeCompile/*
+#    build-native:
+#      runs-on: ${{ matrix.os }}
+#      strategy:
+#        matrix:
+#          os: [macos-latest, windows-latest, ubuntu-latest]
+#      steps:
+#        - name: 签出仓库
+#          uses: actions/checkout@v7
+#        - name: 安装GraalVM
+#          uses: graalvm/setup-graalvm@v1
+#          with:
+#            java-version: '25'
+#            distribution: 'liberica'
+#        - name: 让gradlew可执行
+#          if: runner.os != 'Windows'
+#          run: chmod +x ./gradlew
+#        - name: 构建原生镜像
+#          if: runner.os == 'Windows'
+#          env:
+#            # Needed for Windows; to resolve issue with temp folder during native image build, due to relativization
+#            # problem when different drives are used, such as in GHA runners.
+#            # https://github.com/graalvm/native-build-tools/issues/754
+#            # https://github.com/bric3/jufmt/commit/feb040f159b9a5168d677455218b787d9b644ee2
+#            GRADLE_OPTS: -Djava.io.tmpdir=${{ runner.temp }}
+#          run: ./gradlew nativeCompile
+#        - name: 构建原生镜像
+#          if: runner.os != 'Windows'
+#          run: ./gradlew nativeCompile
+#        - name: 上传构建产物
+#          uses: actions/upload-artifact@v7
+#          with:
+#            name: WebAPI Native Image ${{ runner.os }} ${{ runner.arch }}
+#            path: build/native/nativeCompile/*

@@ -9,11 +9,11 @@ plugins {
     id("org.springframework.boot") version "4.1.0"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.hibernate.orm") version "7.4.1.Final"
-    id("org.graalvm.buildtools.native") version "1.1.1"
+//    id("org.graalvm.buildtools.native") version "1.1.1"
 }
 
 group = "xyz.thewhitedog9487"
-version = "0.8.0"
+version = "0.8.1"
 
 java {
     toolchain {
@@ -48,22 +48,22 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
-	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
+//	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
+//	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 //	testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")
 //	testImplementation("org.springframework.boot:spring-boot-starter-jdbc-test")
 //	testImplementation("org.springframework.boot:spring-boot-starter-restclient-test")
 //	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-authorization-server-test")
 //	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-client-test")
 //	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+//	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
+//	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 //	testImplementation("org.springframework.boot:spring-boot-starter-websocket-test")
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testCompileOnly("org.projectlombok:lombok")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testAnnotationProcessor("org.projectlombok:lombok")
-    testImplementation(kotlin("test"))
+//	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+//	testCompileOnly("org.projectlombok:lombok")
+//	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+//	testAnnotationProcessor("org.projectlombok:lombok")
+//  testImplementation(kotlin("test"))
 
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
     implementation("org.hibernate.orm:hibernate-community-dialects")
@@ -107,6 +107,7 @@ tasks.withType<KotlinCompile>().configureEach {
         freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }
+
 kapt {
     keepJavacAnnotationProcessors = true
 }
