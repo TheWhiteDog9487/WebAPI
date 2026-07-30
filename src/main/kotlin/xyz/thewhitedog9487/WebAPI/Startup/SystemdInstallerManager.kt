@@ -63,7 +63,7 @@ fun ProcessArguments(CommandLineArguments: Array<String>) {
             val DiscordBotToken = if ("--Discord_Bot_Token" in CommandLineArguments &&
                 CommandLineArguments.getOrNull(CommandLineArguments.indexOf("--Discord_Bot_Token") + 1) != null ){
                 CommandLineArguments[CommandLineArguments.indexOf("--Discord_Bot_Token") + 1] }
-                            else System.getenv("Discord_Bot_Token")
+                            else System.getenv().getOrDefault("Discord_Bot_Token", "")
             if (DiscordBotToken.isEmpty()) {
                 Logger.error { "必须通过--Discord_Bot_Token参数或Discord_Bot_Token环境变量提供Discord机器人的令牌以使本程序正常工作。" }
                 throw IllegalArgumentException("缺少必须的--Discord_Bot_Token参数") }
