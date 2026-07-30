@@ -8,7 +8,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: 签出仓库
-            uses: actions/checkout@v5
+            uses: actions/checkout@v7
           - name: 安装JDK
             uses: actions/setup-java@v5
             with:
@@ -18,10 +18,9 @@ jobs:
             if: runner.os != 'Windows'
             run: chmod +x ./gradlew
           - name: 构建
-            run: ./gradlew build -x test
-            # 测试肯定通不过，有问题，干脆直接跳掉完事
+            run: ./gradlew build
           - name: 上传构建产物
-            uses: actions/upload-artifact@v4
+            uses: actions/upload-artifact@v7
             with:
               name: WebAPI Jar
               path: build/libs/*boot*.jar
@@ -32,7 +31,7 @@ jobs:
           os: [macos-latest, windows-latest, ubuntu-latest]
       steps:
         - name: 签出仓库
-          uses: actions/checkout@v5
+          uses: actions/checkout@v7
         - name: 安装GraalVM
           uses: graalvm/setup-graalvm@v1
           with:
@@ -49,12 +48,12 @@ jobs:
             # https://github.com/graalvm/native-build-tools/issues/754
             # https://github.com/bric3/jufmt/commit/feb040f159b9a5168d677455218b787d9b644ee2
             GRADLE_OPTS: -Djava.io.tmpdir=${{ runner.temp }}
-          run: ./gradlew nativeCompile -x test
+          run: ./gradlew nativeCompile
         - name: 构建原生镜像
           if: runner.os != 'Windows'
-          run: ./gradlew nativeCompile -x test
+          run: ./gradlew nativeCompile
         - name: 上传构建产物
-          uses: actions/upload-artifact@v4
+          uses: actions/upload-artifact@v7
           with:
             name: WebAPI Native Image ${{ runner.os }} ${{ runner.arch }}
             path: build/native/nativeCompile/*

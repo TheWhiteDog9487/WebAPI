@@ -40,7 +40,6 @@ val ServiceFileDirectory: Path = Path("/etc/systemd/system/")
 val ServiceFileName: Path = Path("WebAPI.service")
 const val SoftLinkFileName: String = "Current"
 val SymbolicLinkPath: Path = WorkingDirectory.resolve(SoftLinkFileName)
-var DiscordBotToken: String = System.getenv("Discord_Bot_Token")
 
 /**
  * 检测当前运行环境是否为GraalVM生成的Native Image
@@ -61,10 +60,10 @@ fun ProcessArguments(CommandLineArguments: Array<String>) {
             在Native Image / Jar文件旁边生成指向自身的，名为Current的软连接
             然后在软连接旁生成systemd服务文件，执行目标指向软连接
             */
-            DiscordBotToken = if (CommandLineArguments.contains("--Discord_Bot_Token") &&
+            val DiscordBotToken = if ("--Discord_Bot_Token" in CommandLineArguments &&
                 CommandLineArguments.getOrNull(CommandLineArguments.indexOf("--Discord_Bot_Token") + 1) != null ){
                 CommandLineArguments[CommandLineArguments.indexOf("--Discord_Bot_Token") + 1] }
-                            else System.getProperty("Discord_Bot_Token", "")
+                            else System.getenv("Discord_Bot_Token")
             if (DiscordBotToken.isEmpty()) {
                 Logger.error { "必须通过--Discord_Bot_Token参数或Discord_Bot_Token环境变量提供Discord机器人的令牌以使本程序正常工作。" }
                 throw IllegalArgumentException("缺少必须的--Discord_Bot_Token参数") }
