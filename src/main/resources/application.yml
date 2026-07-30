@@ -19,9 +19,14 @@ spring:
     username:
     password:
     url: jdbc:sqlite:SQLiteDataBase.db
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
 
 server:
   port: 36987
+
 logging:
   pattern:
     level: "%5p %X{RequestID}"
