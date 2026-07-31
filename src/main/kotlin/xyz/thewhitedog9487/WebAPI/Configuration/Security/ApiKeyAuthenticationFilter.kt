@@ -16,7 +16,7 @@ import xyz.thewhitedog9487.WebAPI.Data.Entity.AccessLog
 import xyz.thewhitedog9487.WebAPI.Miscellaneous.SpringContextHolder.SpringContext
 import java.nio.charset.StandardCharsets
 
-class ApiKeyAuthenticationFilter(): OncePerRequestFilter() {
+class ApiKeyAuthenticationFilter: OncePerRequestFilter() {
     val ApiKeyManagerInstance = SpringContext.getBean<ApiKeyManager>()
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {

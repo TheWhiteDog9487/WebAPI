@@ -26,12 +26,13 @@ class IP {
 1. CF-Connecting-IP  
 2. X-Forwarded-For  
 3. 直接使用请求的远程地址""")
-    @ApiResponse(responseCode = "200",
+    @ApiResponse(
+        responseCode = "200",
+        description = "成功获取到IP地址，内容为纯文本格式的IP地址",
         content = [Content(
             mediaType = MediaType.TEXT_PLAIN_VALUE,
             schema = Schema(implementation = String::class),
-            examples = [ExampleObject(value = "78.141.226.247")])],
-        description = "成功获取到IP地址，内容为纯文本格式的IP地址")
+            examples = [ExampleObject(value = "78.141.226.247") ] ) ] )
     @GetMapping("")
     fun GetIP(@RequestHeader("CF-Connecting-IP", required = false) Header_CFConnectingIP: String?,
               @RequestHeader("X-Forwarded-For", required = false) Header_XForwardedFor: String?,
@@ -54,18 +55,20 @@ class IP {
 如果请求没有经过Cloudflare，则会返回"未找到CF-IPCountry头部"
 """)
     @ApiResponses(value = [
-        ApiResponse(responseCode = "200",
+        ApiResponse(
+            responseCode = "200",
+            description = "成功获取到ISO 3166-1 alpha-2国家代码，内容为纯文本格式的国家代码",
             content = [Content(
                 mediaType = MediaType.TEXT_PLAIN_VALUE,
                 schema = Schema(implementation = String::class),
-                examples = [ExampleObject(value = "HK")])],
-            description = "成功获取到ISO 3166-1 alpha-2国家代码，内容为纯文本格式的国家代码"),
-        ApiResponse(responseCode = "404",
+                examples = [ExampleObject(value = "HK") ] ) ] ),
+        ApiResponse(
+            responseCode = "404",
+            description = "未找到CF-IPCountry头部，内容为纯文本格式的错误信息",
             content = [Content(
                 mediaType = MediaType.TEXT_PLAIN_VALUE,
                 schema = Schema(implementation = String::class),
-                examples = [ExampleObject(value = "未找到CF-IPCountry头部")] ) ],
-            description = "未找到CF-IPCountry头部，内容为纯文本格式的错误信息") ] )
+                examples = [ExampleObject(value = "未找到CF-IPCountry头部") ] ) ] ) ] )
     @GetMapping("iso3166")
     fun GetIso3166(@RequestHeader("CF-IPCountry", required = false) Header_CFIPCountry: String?): ResponseEntity<String> {
         Header_CFIPCountry?.let {

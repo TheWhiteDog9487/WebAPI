@@ -20,27 +20,27 @@ class GlobalSharedBean {
     val Logger = KotlinLogging.logger{}
 
     @Bean
-    fun DiscordClient(@Value("\${Discord_Bot_Token:}") DiscordBotToken: String): Kord {
+    fun DiscordClient(@Value("\${Discord_Bot_Token:}") DiscordBotToken: String): Kord? {
         if (DiscordBotToken.isEmpty()) {
-            Logger.error { "未通过参数--Discord_Bot_Token或环境变量Discord_Bot_Token提供Discord登录令牌，请检查配置。" }
-            throw IllegalArgumentException("未提供Discord登录令牌") }
+            Logger.warn { "未通过参数--Discord_Bot_Token或环境变量Discord_Bot_Token提供Discord登录令牌，将无法使用Discord相关功能。" }
+            return null }
         return runBlocking(VirtualThreadCoroutineDispatcher) { Kord(DiscordBotToken) } }
 
     @Bean
-    fun KordLifecycleManager(KordInstance: Kord) = object: SmartLifecycle {
+    fun KordLifecycleManager(KordInstance: Kord?) = object: SmartLifecycle {
         var Job: Job? = null
         override fun start() {
             Job = CoroutineScope(VirtualThreadCoroutineDispatcher).launch {
-                KordInstance.login { } } }
+                KordInstance?.login { } } }
 
         override fun stop() {
             runBlocking(VirtualThreadCoroutineDispatcher) {
                 try {
-                    KordInstance.logout()
+                    KordInstance?.logout()
                 } catch (_: IllegalStateException) { }
                 Job?.cancelAndJoin() } }
 
         override fun isRunning() = Job?.isActive ?: false }
 
-    @get:Bean
+    @get:Bean(name = ["SQLiteWriteLock"])
     val SQLiteWriteLock: Lock = ReentrantLock() }

@@ -41,22 +41,18 @@ class AccessLog(val AccessLogRepositoryInstance: AccessLogRepository) {
                         examples = [
                             ExampleObject(
                                 name = "Limit小于0",
-                                value = """
-                                {
+                                value = """{
                                   "code": 400,
                                   "message": "Limit参数不能小于0",
                                   "data": null
-                                }
-                                """ ),
+                                }""" ),
                             ExampleObject(
                                 name = "字段不存在",
-                                value = """
-                                {
+                                value = """{
                                   "code": 400,
                                   "message": "试图访问一个不存在的数据库字段",
                                   "data": "AccessLog类中不存在名为 NotExistField 的字段"
-                                }
-                                """ ) ] ) ] ),
+                                }""" ) ] ) ] ),
             ApiResponse(
                 responseCode = "200",
                 description = "成功获取到数据",
@@ -68,8 +64,7 @@ class AccessLog(val AccessLogRepositoryInstance: AccessLogRepository) {
                             schema = Schema(implementation = AccessLog::class) ),
                         examples = [
                             ExampleObject(
-                                value = """
-                                [
+                                value = """[
                                   {
                                     "ID": 18,
                                     "RequestID": "3",
@@ -105,27 +100,8 @@ class AccessLog(val AccessLogRepositoryInstance: AccessLogRepository) {
                                     "Header": "host: dev.thewhitedog9487.xyz\nx-real-ip: 172.71.150.157\nx-forwarded-for: 2409:8962:77a:49c:a579:f5af:58a3:e2c, 172.71.150.157\nx-forwarded-proto: https\nconnection: close\nx-api-key: asdasdaFSEA452453sdcv\nuser-agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.2.3\naccept: */*\ncf-ray: 98cc7d6aaea1c37a-SEA\naccept-encoding: gzip, br\ncdn-loop: cloudflare; loops=1\ncf-connecting-ip: 2409:8962:77a:49c:a579:f5af:58a3:e2c\ncf-ipcountry: CN\ncf-visitor: {\"scheme\":\"https\"}\ncookie: JSESSIONID=A49527B913170D86A5544A252BD31040",
                                     "Timestamp": "2025-10-11T07:02:05.718Z",
                                     "ResponseStatusCode": 200
-                                  },
-                                  {
-                                    "ID": 263,
-                                    "RequestID": "35",
-                                    "CF_Connecting_IP": "2409:8962:77a:49c:a579:f5af:58a3:e2c",
-                                    "X_Forwarded_For": "2409:8962:77a:49c:a579:f5af:58a3:e2c, 108.162.246.209",
-                                    "RemoteAddress": "192.168.128.11",
-                                    "CF_IPCountry": "CN",
-                                    "ISO3166": "CHN",
-                                    "UserAgent": "IntelliJ HTTP Client/IntelliJ IDEA 2025.2.3",
-                                    "HttpMethod": "GET",
-                                    "Protocol": "http",
-                                    "ProtocolVersion": "HTTP/1.0",
-                                    "URL": "http://dev.thewhitedog9487.xyz/ip/ip",
-                                    "QueryString": null,
-                                    "Header": "host: dev.thewhitedog9487.xyz\nx-real-ip: 108.162.246.209\nx-forwarded-for: 2409:8962:77a:49c:a579:f5af:58a3:e2c, 108.162.246.209\nx-forwarded-proto: https\nconnection: close\naccept-encoding: gzip, br\nuser-agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.2.3\naccept: */*\ncf-ray: 98cc9ec12c48a1a5-SEA\ncdn-loop: cloudflare; loops=1\ncf-connecting-ip: 2409:8962:77a:49c:a579:f5af:58a3:e2c\ncf-ipcountry: CN\ncf-visitor: {\"scheme\":\"https\"}\ncookie: JSESSIONID=A49527B913170D86A5544A252BD31040",
-                                    "Timestamp": "2025-10-11T07:24:51.504Z",
-                                    "ResponseStatusCode": 200
                                   }
-                                ]
-                                """ ) ] ) ] ),
+                                ]""" ) ] ) ] ),
             ApiResponse(
                 responseCode = "401",
                 description = "未提供API密钥",
@@ -135,13 +111,11 @@ class AccessLog(val AccessLogRepositoryInstance: AccessLogRepository) {
                         schema = Schema(implementation = ResponseData::class),
                         examples = [
                             ExampleObject(
-                                value = """
-                                {
+                                value = """{
                                   "code": 401,
                                   "message": "API密钥验证失败，未传递X-API-Key请求头",
                                   "data": null
-                                }
-                                """ ) ] ) ] ),
+                                }""" ) ] ) ] ),
             ApiResponse(
                 responseCode = "403",
                 description = "API密钥无效",
@@ -151,13 +125,11 @@ class AccessLog(val AccessLogRepositoryInstance: AccessLogRepository) {
                         schema = Schema(implementation = ResponseData::class),
                         examples = [
                             ExampleObject(
-                                value = """
-                                {
+                                value = """{
                                   "code": 403,
                                   "message": "API密钥验证失败，API密钥无效",
                                   "data": null
-                                }
-                                """ ) ] ) ] ) ] )
+                                }""" ) ] ) ] ) ] )
     @GetMapping
     fun GetLog(@Parameter(description = "用于身份验证的API密钥", `in` = ParameterIn.HEADER, required = true, example = "ds1858dscc8745sfwe" )
                @RequestHeader("X-API-Key") ApiKey: String,
