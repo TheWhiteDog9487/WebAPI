@@ -105,7 +105,7 @@ cookie: JSESSIONID=A49527B913170D86A5544A252BD31040
     var Header: String = "",
 
     @JsonProperty("Timestamp")
-    @Schema(description = "请求时间（ISO-8601格式）", example = "2025-09-29T03:49:42.766Z")
+    @Schema(description = "请求时间 ISO-8601格式", example = "2025-09-29T03:49:42.766Z")
     var Timestamp: Instant = Instant.now(),
 
     @JsonProperty("ResponseStatusCode")
@@ -126,11 +126,11 @@ cookie: JSESSIONID=A49527B913170D86A5544A252BD31040
         httpRequest.requestURL.toString(),
         httpRequest.queryString,
         httpRequest.headerNames.toList().joinToString("\n") { name ->
-            return@joinToString "$name: ${httpRequest.getHeaders(name).toList().joinToString(", ")}" },
+            return@joinToString "$name: ${httpRequest.getHeaders(name).toList().joinToString(", ") }" },
         Instant.now(),
         0 )
     fun SaveIntoDatabase(CachedResponse: ContentCachingResponseWrapper? = null){
-        val SQLiteWriteLock = SpringContext.getBean("getSQLiteWriteLock", ReentrantLock::class.java)
+        val SQLiteWriteLock = SpringContext.getBean<ReentrantLock>("SQLiteWriteLock")
         val AccessLogRepository = SpringContext.getBean<AccessLogRepository>()
         try {
             SQLiteWriteLock.lock()

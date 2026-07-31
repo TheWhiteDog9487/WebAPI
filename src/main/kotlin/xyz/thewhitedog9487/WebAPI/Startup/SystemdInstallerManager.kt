@@ -60,13 +60,16 @@ fun ProcessArguments(CommandLineArguments: Array<String>) {
             在Native Image / Jar文件旁边生成指向自身的，名为Current的软连接
             然后在软连接旁生成systemd服务文件，执行目标指向软连接
             */
+            val DisableDiscord = "--Disable-Discord" in CommandLineArguments
             val DiscordBotToken = if ("--Discord_Bot_Token" in CommandLineArguments &&
                 CommandLineArguments.getOrNull(CommandLineArguments.indexOf("--Discord_Bot_Token") + 1) != null ){
                 CommandLineArguments[CommandLineArguments.indexOf("--Discord_Bot_Token") + 1] }
                             else System.getenv().getOrDefault("Discord_Bot_Token", "")
-            if (DiscordBotToken.isEmpty()) {
+            if (DiscordBotToken.isEmpty() && DisableDiscord == false) {
                 Logger.error { "必须通过--Discord_Bot_Token参数或Discord_Bot_Token环境变量提供Discord机器人的令牌以使本程序正常工作。" }
                 throw IllegalArgumentException("缺少必须的--Discord_Bot_Token参数") }
+            if (DisableDiscord) {
+                Logger.warn { "已通过--Disable-Discord参数禁用Discord功能，程序无法使用Discord相关功能。" } }
             Logger.info { "开始安装systemd服务" }
             Logger.debug { "SystemProperties.os.name: $CurrentOS" }
             if (CurrentOS.startsWith("Linux")) {
@@ -100,7 +103,7 @@ fun ProcessArguments(CommandLineArguments: Array<String>) {
                     ExecStart=$ExecCommand
                     Restart=always
                     Type=simple
-                    Environment="Discord_Bot_Token=$DiscordBotToken"
+                    ${if (DisableDiscord == false) "Environment=\"Discord_Bot_Token=$DiscordBotToken\"" else ""}
                 
                     [Install]
                     WantedBy=multi-user.target

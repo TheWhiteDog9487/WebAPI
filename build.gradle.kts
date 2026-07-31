@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "xyz.thewhitedog9487"
-version = "0.8.2"
+version = "0.8.3"
 
 java {
     toolchain {
